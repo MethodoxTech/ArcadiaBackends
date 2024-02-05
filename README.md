@@ -30,6 +30,10 @@ Commands can be used in message. Commands are case-insensitive.
 * `!loging <username> <token> <email>`: Login to server; if username is not taken, it will be registered. Token is used to authenticate user and only the hash will be saved so it cannot be recovered - provide an email address if you wish to recover your account. Login provides benefits like unique username and server-side configuration storage (for listening channels). Login doesn't alter session ID (or guest ID); The same login may be used by multiple sessions/guest IDs.
 * `!listen`: Listen to only specified channels - this should be saved as per user/login configuration.
 
+## Arcadia Clients
+
+All messages are generally handled on the server side - client is just responsible for providing an interface and sending messages to the server. On the other hand, all clients should support two actions: 1) Specify (default) channel, 2) Specify server to connect to. The second action is important because Arcadia likely have lots of atomic servers (seeds).
+
 ## Developer Guide: Develop Custom Arcadia Client
 
 To develop a custom Arcadia client, just connect to the server endpoint, then start messaging like you would on a chat!
