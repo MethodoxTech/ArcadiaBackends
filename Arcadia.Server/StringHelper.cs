@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Shared
+﻿namespace Arcadia.Server
 {
     public static class StringHelper
     {
@@ -37,8 +37,8 @@
         }
         private static string TrimMatchingQuotes(this string input, char quote)
         {
-            if ((input.Length >= 2) &&
-                (input[0] == quote) && (input[^1] == quote))
+            if (input.Length >= 2 &&
+                input[0] == quote && input[^1] == quote)
                 return input.Substring(1, input.Length - 2);
 
             return input;

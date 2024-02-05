@@ -1,5 +1,4 @@
-﻿using Arcadia.Shared;
-using WebSocketSharp.Server;
+﻿using WebSocketSharp.Server;
 using WebSocketSharp;
 
 namespace Arcadia.Server
@@ -29,35 +28,64 @@ namespace Arcadia.Server
         {
             base.OnOpen();
 
-            Log.Info("New connection.");
+            Logging.Info("New connection.");
 
-            Send(GetWelcomeMessage(UniqueGuestID));
-            Sessions.Broadcast($"New connection: guest {Sessions.Count - 1}; Current online: {Sessions.Count}");
+            Login login = Singleton.ServerState.UpdateLogin(this, UniqueGuestID);
+
+            Send(GetWelcomeMessage(login.ID));
+            Sessions.Broadcast($"New connection: guest {login.ID}; Current online: {Sessions.Count}");
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            Log.Info(e.Data);
+            var user = Singleton.ServerState.SessionUsers[this];
+            Logging.Info($"{user}: {e.Data}");
 
             string input = e.Data;
-            string[] parts = input.SplitCommandLine().ToArray();
-            string userID = parts[0].TrimStart('{').TrimEnd('}');
-            string command = parts[1];
-            string content = parts[2];
 
-            string userName = userID.Split(':').First();
-            string userToken = userID.Split(':').Last();
-            User user = new(userName, userToken, true);
+            string channel = "-default";
+            string command = "!speak";
+            string content = input;
+
+            foreach (string part in input.Split(' ').Take(2))
+            {
+                if (part.StartsWith('-'))
+                {
+                    channel = part;
+                    content = ReplaceFirstOccurence(content, channel);
+                }
+                else if (part.StartsWith('!'))
+                {
+                    command = part;
+                    content = ReplaceFirstOccurence(content, command);
+                }
+            }
 
             switch (command)
             {
                 case "!speak":
-                    Sessions.Broadcast($"{user.Name}: {content}");
+                    BroadcastAtChannel(user, channel, content);
                     break;
                 default:
-                    Sessions.Broadcast($"{user.Name}: {content}");
+                    Send($"Invalid command: {command} (In {e.Data})");
                     break;
             }
+
+            static string ReplaceFirstOccurence(string content, string keyword)
+            {
+                int index = content.IndexOf(keyword);
+                return content.Remove(index + keyword.Length) + content.Substring(index + 1);    // Replace the first occurence only
+            }
         }
+
+        #region Routines
+        private void BroadcastAtChannel(Login user, string channel, string message)
+        {
+            // TODO: Handle channel
+            // TODO: Don't send back to original user
+            string username = user.Username;
+            Sessions.Broadcast($"{username}: {message}");
+        }
+        #endregion
     }
 }

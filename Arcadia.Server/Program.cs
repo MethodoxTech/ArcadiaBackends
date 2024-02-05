@@ -15,14 +15,8 @@ namespace Arcadia.Server
                     ? Environment.GetEnvironmentVariable(envVar)!
                     : defaultAddress;
 
-            Console.WriteLine($"Start arcadia at {serverAddress}...");
+            Logging.Info($"Start arcadia at {serverAddress}...");
             WebSocketServer wssv = new(serverAddress);
-            // TODO: wssv logging is not working; We need to implement our own, so the behavior is more predictable
-            wssv.Log.Level = WebSocketSharp.LogLevel.Info;
-            wssv.Log.Output += (data, path) =>
-            {
-                Console.WriteLine(data);
-            };
 
             wssv.AddWebSocketService<Arcadia>("/Arcadia");
             wssv.Start();

@@ -1,14 +1,13 @@
 # Arcadia
 
-Simple-minded websocket message-based anyone-is-welcome server.
+Simple-minded websocket message-based anyone-is-welcome server. All guests are welcomed as a unique guest untill login.
 
-There are two kinds of messages, one is stateless, one is stated:
-
-1. Stateless message includes all configurations in one shot: `{username:token} [channel] message`. Except `message`, all other arguments cannot contain space. This puts the user at the specified channel.
-2. Stated messages use specific commands to do things.
+Simple message format: `-channel message`. Where message may be used as a command. Channel should not contain space and must start with `-`; If no channel is specified, it uses default channel.
 
 ## Commands
 
-* `!set`: Set username.
-* (Default) `!speak`: Speak at specific channel.
+Commands can be used in message. Commands are case-insensitive.
+
+* (Default) `!speak <content>`: Speak at specific channel.
+* `!loging <username> <token> <email>`: Login to server; if username is not taken, it will be registered. Token is used to authenticate user and only the hash will be saved so it cannot be recovered - provide an email address if you wish to recover your account.
 * `!listen`: Listen to only specified channels.

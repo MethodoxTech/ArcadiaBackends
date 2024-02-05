@@ -6,10 +6,7 @@ namespace Arcadia.Client
     {
         public static void Main(string[] args)
         {
-            Console.Write("Enter username: ");
-            string username = Console.ReadLine();
-            Console.Write("Enter token: ");
-            string token = Console.ReadLine();
+            Console.WriteLine("Connecting to Arcadia server...");
 
             string endpoint = "ws://localhost:9910/Arcadia";
             var connection = Connect(endpoint);
@@ -22,7 +19,7 @@ namespace Arcadia.Client
                 if (input == "exit")
                     break;
                 else if (input != null)
-                    connection.Send($"{{{username}:{token}}} !speak {input}");
+                    connection.Send(input);
             }
 
             connection.Close();
