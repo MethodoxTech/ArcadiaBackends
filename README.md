@@ -12,8 +12,8 @@ Channel should not contain space and must start with `-`; If no channel is speci
 Commands can be used in message. Commands are case-insensitive.
 
 * (Default) `!speak <content>`: Speak at specific channel.
-* `!loging <username> <token> <email>`: Login to server; if username is not taken, it will be registered. Token is used to authenticate user and only the hash will be saved so it cannot be recovered - provide an email address if you wish to recover your account.
-* `!listen`: Listen to only specified channels.
+* `!loging <username> <token> <email>`: Login to server; if username is not taken, it will be registered. Token is used to authenticate user and only the hash will be saved so it cannot be recovered - provide an email address if you wish to recover your account. Login provides benefits like unique username and server-side configuration storage (for listening channels). Login doesn't alter session ID (or guest ID); The same login may be used by multiple sessions/guest IDs.
+* `!listen`: Listen to only specified channels - this should be saved as per user/login configuration.
 
 ## Developer Guide: Develop Custom Arcadia Client
 
