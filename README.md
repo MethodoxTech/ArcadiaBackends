@@ -18,8 +18,8 @@ flowchart TD
 
   id[Unique Login ID]
 
-  id --> server --> channel
-  id --> client --> channel
+  id --> server
+  id --> client --> channel --> server
 ```
 
 ## Commands
