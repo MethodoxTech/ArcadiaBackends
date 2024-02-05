@@ -18,9 +18,9 @@ namespace Arcadia.Server
             } 
         }
 
-        public string GetWelcomeMessage() => $"""
-            Welcome to Arcadia!
-            Arcadia is the live discussion board for Parcel, you are welcoem to share your ideas and comments and questions and general chit-chat here! Please note that the Arcadia server is stateless and all chat history will NOT be saved permanently. If you want to keep some chat history, please save them at your own regards.
+        public string GetWelcomeMessage(long ID) => $"""
+            Welcome to Arcadia! Unique guest number: {ID}
+            Arcadia is the live discussion board for Parcel, you are welcome to share your ideas and comments and questions and general chit-chat here! Please note that the Arcadia server is stateless and all chat history will NOT be saved permanently. If you want to keep some chat history, please save them at your own regards.
             Please respect each other when posting your questions.
             You can find the source code for Arcadia here: https://github.com/Charles-Zhang-Parcel/Arcadia
             """;
@@ -31,7 +31,7 @@ namespace Arcadia.Server
 
             Log.Info("New connection.");
 
-            Send(GetWelcomeMessage());
+            Send(GetWelcomeMessage(UniqueGuestID));
             Sessions.Broadcast($"New connection: guest {Sessions.Count - 1}; Current online: {Sessions.Count}");
         }
 
