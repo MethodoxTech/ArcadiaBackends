@@ -82,9 +82,11 @@ namespace Arcadia.Server
         private void BroadcastAtChannel(Login user, string channel, string message)
         {
             // TODO: Handle channel
-            // TODO: Don't send back to original user
             string username = user.Username;
-            Sessions.Broadcast($"{username}: {message}");
+            string content = $"{username}: {message}";
+            foreach (IWebSocketSession? session in Sessions.Sessions)
+                if (session.ID != ID)
+                    Sessions.SendTo(content, session.ID);
         }
         #endregion
     }
