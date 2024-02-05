@@ -7,6 +7,21 @@ Channel should not contain space and must start with `-`; If no channel is speci
 
 (At the moment Arcadia doesn't have a central server yet)
 
+```mermaid
+---
+title: Arcadia Server-Client Structure
+---
+flowchart TD
+  server[Arcadia Server]
+  channel[Messaging Commands]
+  client[Arcadia Client]
+
+  id[Unique Login ID]
+
+  id --> server --> channel
+  id --> client --> channel
+```
+
 ## Commands
 
 Commands can be used in message. Commands are case-insensitive.
