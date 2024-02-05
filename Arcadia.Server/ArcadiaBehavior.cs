@@ -7,6 +7,7 @@ namespace Arcadia.Server
     {
         public const int MessageFrequencyLimitInMinutes = 1; // User must wait this long before broadcasting another message
         public const int MessageLengthLimitInWords = 250; // User message mustn't exeed this length limit to save server from too much work load
+        public const string DefaultChannel = "-default";
 
         public static long _UniqueGuestID = 0;
         public static long UniqueGuestID 
@@ -17,11 +18,12 @@ namespace Arcadia.Server
             } 
         }
 
-        public string GetWelcomeMessage(long ID) => $"""
-            Welcome to Arcadia! Unique guest number: {ID}
+        public string GetWelcomeMessage(long id, string sessionID, string username) => $"""
+            Welcome to Arcadia!
             Arcadia is the live discussion board for Parcel, you are welcome to share your ideas and comments and questions and general chit-chat here! Please note that the Arcadia server is stateless and all chat history will NOT be saved permanently. If you want to keep some chat history, please save them at your own regards.
             Please respect each other when posting your questions.
             You can find the source code for Arcadia here: https://github.com/Charles-Zhang-Parcel/Arcadia
+            Your unique guest number: {id}, session ID: {sessionID}, username: {username}
             """;
 
         protected override void OnOpen()
@@ -32,8 +34,15 @@ namespace Arcadia.Server
 
             Login login = Singleton.ServerState.UpdateLogin(this, UniqueGuestID);
 
-            Send(GetWelcomeMessage(login.ID));
-            Sessions.Broadcast($"New connection: guest {login.ID}; Current online: {Sessions.Count}");
+            Send(GetWelcomeMessage(login.ID, ID, login.Username));
+            Sessions.Broadcast($"New connection: {login.Username} (#{login.ID}); Current online: {Sessions.Count}");
+        }
+        protected override void OnClose(CloseEventArgs e)
+        {
+            base.OnClose(e);
+
+            Singleton.ServerState.SessionUsers.TryRemove(this, out var login);
+            Sessions.Broadcast($"User {login.Username} (#{login.ID}) has left the chat room; Current online: {Sessions.Count}");
         }
 
         protected override void OnMessage(MessageEventArgs e)
