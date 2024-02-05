@@ -10,7 +10,6 @@ namespace Arcadia.Client
 
             string endpoint = "ws://localhost:9910/Arcadia";
             var connection = Connect(endpoint);
-            Console.WriteLine("Connected.");
 
             while (true)
             {
@@ -29,7 +28,17 @@ namespace Arcadia.Client
         {
             WebSocket ws = new(endpoint);
             ws.OnMessage += (sender, e) =>
-                Console.WriteLine(e.Data);
+            {
+                // Assuming we are in the input row, this automatically fixes display
+                if (Console.CursorLeft != 0)
+                {
+                    Console.CursorLeft = 0;
+                    Console.WriteLine(e.Data);
+                    Console.Write("> ");
+                }
+                else
+                    Console.WriteLine(e.Data);
+            };
 
             ws.Connect();
             return ws;
