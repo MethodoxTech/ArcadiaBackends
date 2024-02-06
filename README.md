@@ -26,6 +26,15 @@ TODO:
 
 - [ ] Support listening to multiple channels.
 
+## Features/Limitations
+
+As a program-accessible global authentication free broadcast server, Arcadia is designed to foster a healthy real-time help and discussion community experience with those feature decisions in mind: 
+
+* Guests are limited 250 word message per minute.
+* Any user is limited to sending messages to current channel only. (Actually this doesn't stop programs from troll)
+* Users are automatically ranked by Live Time, Age (Duration time) and @Frequency as a single Rank Score/EXP = Live Time in Seconds + Inception in Months + Unique @ Users (not occurrences) * 25. 
+* Server admin have power over user administration through admin-specific commands.
+
 ## Commands
 
 Commands can be used in message. Commands are case-insensitive.
