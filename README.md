@@ -22,6 +22,10 @@ flowchart TD
   id --> client --> channel --> server
 ```
 
+TODO:
+
+- [ ] Support listening to multiple channels.
+
 ## Commands
 
 Commands can be used in message. Commands are case-insensitive.

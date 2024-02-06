@@ -17,13 +17,18 @@ namespace Arcadia.Server
                 return Interlocked.Increment(ref _UniqueGuestID);
             } 
         }
+        public Login? SessionUser;
+        public string? UserIdentifier => SessionUser.ToString();
 
-        public string GetWelcomeMessage(long id, string sessionID, string username) => $"""
+        public string CurrentChannel = DefaultChannel;
+
+        public string GetWelcomeMessage() => $"""
             Welcome to Arcadia!
             Arcadia is the live discussion board for Parcel, you are welcome to share your ideas and comments and questions and general chit-chat here! Please note that the Arcadia server is stateless and all chat history will NOT be saved permanently. If you want to keep some chat history, please save them at your own regards.
             Please respect each other when posting your questions.
             You can find the source code for Arcadia here: https://github.com/Charles-Zhang-Parcel/Arcadia
-            Your unique guest number: {id}, session ID: {sessionID}, username: {username}
+            Your unique guest number: {SessionUser.UniqueGuestID}, session ID: {ID}, username: {SessionUser.Username}
+            Current chat channel: {CurrentChannel}
             """;
 
         protected override void OnOpen()
@@ -32,27 +37,25 @@ namespace Arcadia.Server
 
             Logging.Info("New connection.");
 
-            Login login = Singleton.ServerState.UpdateLogin(this, UniqueGuestID);
+            SessionUser = Singleton.ServerState.UpdateLogin(this, UniqueGuestID, ID);
 
-            Send(GetWelcomeMessage(login.ID, ID, login.Username));
-            Sessions.Broadcast($"New connection: {login.Username} (#{login.ID}); Current online: {Sessions.Count}");
+            Send(GetWelcomeMessage());
+            Sessions.Broadcast($"New connection: {UserIdentifier}; Current online: {Sessions.Count}");
         }
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
 
             Singleton.ServerState.SessionUsers.TryRemove(this, out var login);
-            Sessions.Broadcast($"User {login.Username} (#{login.ID}) has left the chat room; Current online: {Sessions.Count}");
+            Sessions.Broadcast($"User {UserIdentifier} has left the chat room; Current online: {Sessions.Count}");
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            var user = Singleton.ServerState.SessionUsers[this];
-            Logging.Info($"{user}: {e.Data}");
+            Logging.Info($"{SessionUser.Username} (): {e.Data}");
 
             string input = e.Data;
 
-            string channel = "-default";
             string command = "!speak";
             string content = input;
 
@@ -60,8 +63,8 @@ namespace Arcadia.Server
             {
                 if (part.StartsWith('-'))
                 {
-                    channel = part;
-                    content = ReplaceFirstOccurence(content, channel);
+                    CurrentChannel = part;
+                    content = ReplaceFirstOccurence(content, part);
                 }
                 else if (part.StartsWith('!'))
                 {
@@ -73,7 +76,22 @@ namespace Arcadia.Server
             switch (command)
             {
                 case "!speak":
-                    BroadcastAtChannel(user, channel, content);
+                    BroadcastAtChannel(SessionUser, CurrentChannel, content);
+                    break;
+                case "!login":
+                    string[] arguments = content.SplitCommandLine().ToArray();
+                    string username = arguments[0];
+                    string token = arguments[1];
+                    string email = arguments[2];
+                    // TODO: Authenticate
+                    if (UserManager.AuthenticateUser(username, token, email))
+                    {
+                        SessionUser = new Login(username, SessionUser.UniqueGuestID, ID);
+                        Singleton.ServerState.SessionUsers[this] = SessionUser;
+                        BroadcastAtChannel(SessionUser, CurrentChannel, content);
+                    }
+                    else
+                        Send($"Failed to authenticate.");
                     break;
                 default:
                     Send($"Invalid command: {command} (In {e.Data})");

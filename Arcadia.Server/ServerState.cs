@@ -2,11 +2,11 @@
 
 namespace Arcadia.Server
 {
-    public record Login(string Username, long ID)
+    public record Login(string Username, long UniqueGuestID, string SessionID)
     {
         public override string ToString()
         {
-            return $"{Username} ({ID})";
+            return $"{Username} (3{UniqueGuestID})";
         }
     }
 
@@ -30,10 +30,10 @@ namespace Arcadia.Server
         #endregion
 
         #region Methods
-        public Login UpdateLogin(Arcadia arcadia, long ID)
+        public Login UpdateLogin(Arcadia arcadia, long guestID, string sessionID)
         {
-            string username = $"Guest {ID}";
-            var login = new Login(username, ID);
+            string username = $"Guest {guestID}";
+            var login = new Login(username, guestID, sessionID);
             SessionUsers[arcadia] = login;
             return login;
         }
