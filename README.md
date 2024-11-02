@@ -26,6 +26,11 @@ TODO:
 
 - [ ] Support listening to multiple channels.
 
+## Setup
+
+1. Use Visual Studio or `dotnet`: Build and run the server;
+2. User GUI Frontend: connect to server.
+
 ## Features/Limitations
 
 As a program-accessible global authentication free broadcast server, Arcadia is designed to foster a healthy real-time help and discussion community experience with those feature decisions in mind: 
