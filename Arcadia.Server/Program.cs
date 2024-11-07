@@ -7,7 +7,7 @@ namespace Arcadia.Server
         public static void Main(string[] args)
         {
             const string envVar = "PARCEL_ARCADIA_SERVER_ADDRESS";
-            const string defaultAddress = "ws://localhost:9910";
+            const string defaultAddress = "ws://0.0.0.0:9910";
 
             string serverAddress = args.Length > 0
                 ? args[0]
